@@ -1,0 +1,85 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+
+
+<form class="form-horizontal" id="myform">
+          <div class="form-group">
+              <label for="inputName"  class="col-sm-2 control-label">Nombre completo</label>
+              <div class="col-sm-10">
+                <input  type="text" id="name" required name="name" class="form-control" placeholder="Escriba sus nombres y sus apellidos">
+              </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+            <div class="col-sm-10">
+              <input type="email" id="email" required class="form-control"  placeholder="Email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputMonto" class="col-sm-2 control-label">Valor a Pagar (COP)</label>
+            <div class="col-sm-10">
+              <input type="text" id="monto" required class="form-control"  placeholder="valor en pesos colombianos sin puntos ni comas, ejemplo : ( 1200000 ) ">
+            </div>
+          </div>
+          <div class="form-group">
+              <label for="inputDescription" class="col-sm-2 control-label">Descripcion del pago</label>
+              <div class="col-sm-10">
+                <input type="text"  id="description" required class="form-control" placeholder="Cuota inicial de maestria">
+              </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button  id="generarBtn" class="btn btn-info">Generar boton de pago</button>
+              
+            </div>
+          </div>
+        </form>
+
+					<div id="idPayuButtonContainer">
+         </div>
+
+ <script type="text/javascript">
+	 var form = document.getElementById("myform");
+	form.onsubmit = function(e){
+		e.preventDefault();
+		
+		var name = document.getElementById("name").value;
+    var email = document.getElementById("email").value;
+    var monto = document.getElementById("monto").value;
+    var description = document.getElementById("description").value;
+    var referencia =    new Date().getTime(); 
+		var hash = CryptoJS.MD5("[codigo]"+"~"+"{codigo2}"+"~"+referencia+"~"+monto+"~"+"COP");
+    console.log(name + ' ' + email  + ' ' + description + ' ' + monto + ' ' + hash + ' ' + ' ' + referencia );
+    
+		CrearBotonPayu(name,email,monto,description,referencia,hash);
+	}
+	
+
+  
+  function CrearBotonPayu(name,email,monto,description,referencia,hash){
+    var html_button ="<form method='post' action='https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/'>\
+      <input name='buyerFullName'    type='hidden'  value='"+name+"'>\
+    <input name='merchantId'    type='hidden'  value='accountId'>\
+    <input name='accountId'     type='hidden'  value='accountId' >\
+    <input name='description'   type='hidden'  value="+description+"  >\
+    <input name='referenceCode' type='hidden'  value='"+referencia+"' >\
+    <input name='amount'        type='hidden'  value='"+monto+"'  >\
+    <input name='tax'           type='hidden'  value='0'  >\
+    <input name='taxReturnBase' type='hidden'  value='0' >\
+    <input name='currency'      type='hidden'  value='COP' >\
+    <input name='signature'     type='hidden'  value='"+hash+"'>\
+    <input name='test'          type='hidden'  value='1' >\
+    <input name='buyerEmail'    type='hidden'  value='"+email+"' >\
+    <input name='responseUrl'    type='hidden'  value='http://www.test.com/response' >\
+    <input name='confirmationUrl'    type='hidden'  value='https://www.example.org/gracias/' >\
+    <input name='Submit'  class='btn btn-success'  type='submit'  value='Realizar pago' ></form>"; 
+
+    var botonEnviar = document.getElementById("idPayuButtonContainer");
+    document.getElementById('generarBtn').style.display = 'none';
+		var btn = document.getElementById("idPayuButtonContainer");
+		btn.innerHTML = html_button;
+	
+  }
+ 
+ </script>
